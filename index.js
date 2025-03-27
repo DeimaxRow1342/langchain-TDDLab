@@ -3,14 +3,12 @@ import { BufferMemory } from "langchain/memory";
 import { LLMChain } from "langchain/chains";
 import { PromptTemplate } from "@langchain/core/prompts";
 
-// Configuración compartida para ambos servicios
 const mistralConfig = {
     baseUrl: "http://localhost:11434",
     model: "mistral",
     temperature: 0.7
 };
 
-// 1. Configuración para el Chatbot
 const chatModel = new Ollama(mistralConfig);
 
 const chatPrompt = PromptTemplate.fromTemplate(`
@@ -33,10 +31,9 @@ const chatChain = new LLMChain({
     memory: chatMemory
 });
 
-// 2. Configuración para la Retrospectiva
 const retroModel = new Ollama({
     ...mistralConfig,
-    temperature: 0.4  // Más preciso para análisis
+    temperature: 0.4  
 });
 
 const retroPrompt = PromptTemplate.fromTemplate(`
@@ -53,7 +50,6 @@ Estructura requerida:
 
 Usa emojis y sé técnico pero claro:`);
 
-// Funciones exportadas
 export async function generateRetrospective(metrics) {
     const chain = new LLMChain({
         llm: retroModel,

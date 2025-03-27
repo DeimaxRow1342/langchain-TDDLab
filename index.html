@@ -177,7 +177,6 @@
     </div>
 
     <script>
-        // Datos de ejemplo más completos (basados en commits reales)
         const commitMetrics = [
             {
                 id: "dl-001",
@@ -213,17 +212,15 @@
             }
         ];
 
-        // Preparar datos para la gráfica de burbujas
         const commitLabels = commitMetrics.map(commit => `Commit ${commit.id}`);
         const bubbleData = commitMetrics.map(commit => ({
             x: commit.linesAdded,
             y: commit.linesDeleted,
-            r: commit.tests * 2, // Tamaño según cantidad de tests
+            r: commit.tests * 2,
             coverage: commit.coverage,
             message: commit.message
         }));
 
-        // Crear gráfica de burbujas
         const ctx = document.getElementById('commitChart').getContext('2d');
         new Chart(ctx, {
             type: 'bubble',
@@ -233,7 +230,6 @@
                     label: 'Commits',
                     data: bubbleData,
                     backgroundColor: commitMetrics.map(commit => {
-                        // Color según cobertura (de rojo a verde)
                         const hue = (commit.coverage / 100) * 120;
                         return `hsla(${hue}, 70%, 50%, 0.7)`;
                     }),
@@ -280,14 +276,12 @@
             }
         });
 
-                // Generar retrospectiva con Mistral
                 document.getElementById('generateRetro').addEventListener('click', async () => {
                     const retroContent = document.getElementById('retroContent');
                     retroContent.innerHTML = '<p>Generando retrospectiva...</p>';
                     document.getElementById('retrospective').style.display = 'block';
                     
                     try {
-                        // Preparar prompt para Mistral
                         const metricsSummary = commitMetrics.map(commit => 
                             `Commit ${commit.id}: ${commit.tests} tests, ${commit.coverage}% cobertura, ${commit.linesAdded} líneas (+), ${commit.linesDeleted} líneas (-)`
                         ).join('\n');
@@ -305,19 +299,18 @@
                                 
         Usa emojis relevantes y formato markdown para títulos y listas.`,
                                 stream: false,
-                                options: { temperature: 0.5 } // Menos creatividad, más precisión
+                                options: { temperature: 0.5 } 
                             })
                         });
                         
                         const data = await response.json();
-                        retroContent.innerHTML = marked.parse(data.response); // Usamos marked para renderizar markdown
+                        retroContent.innerHTML = marked.parse(data.response); 
                     } catch (error) {
                         retroContent.innerHTML = `<p class="error">Error generando retrospectiva: ${error.message}</p>`;
                         console.error("Error con Ollama:", error);
                     }
                 });
         
-                // Chatbot simplificado (solo responde sobre TDD)
                 document.getElementById('sendMessage').addEventListener('click', sendMessage);
                 document.getElementById('userInput').addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') sendMessage();
@@ -329,25 +322,21 @@
                     
                     if (!input.value.trim()) return;
                     
-                    // Mostrar mensaje usuario
                     const userMsg = document.createElement('div');
                     userMsg.className = 'message user-message';
                     userMsg.textContent = input.value;
                     messages.appendChild(userMsg);
                     
-                    // Mostrar "escribiendo..."
                     const typingMsg = document.createElement('div');
                     typingMsg.className = 'message bot-message';
                     typingMsg.textContent = 'Pensando...';
                     messages.appendChild(typingMsg);
                     messages.scrollTop = messages.scrollHeight;
                     
-                    // Limpiar input
                     const userQuestion = input.value;
                     input.value = '';
                     
                     try {
-                        // Llamar a la API de Ollama (Mistral)
                         const response = await fetch('http://localhost:11434/api/generate', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -370,7 +359,6 @@
                     messages.scrollTop = messages.scrollHeight;
                 }
         
-                // Simple markdown parser (para la retrospectiva)
                 const marked = {
                     parse: (text) => {
                         return text
